@@ -16,40 +16,37 @@ async fn main() {
     let args: Vec<String> = env::args().collect();
     println!("{:?}", args);
     //hacker_news("https://news.ycombinator.com");
-    //chaining .await will yield our query result
+    let mut mainarg = &args[1];
+    if mainarg.eq("Bundestag") || mainarg.eq("bundestag") {
+        bundestag_sitzungen().await;
+    }
+    
+
+fn type_of<T>(_: &T) {
+    println!("{}",type_name::<T>())
+}
+
+async fn bundestag_sitzungen() {
     let resp = reqwest::get("https://www.bundestag.de/parlament/plenum/sitzungskalender/bt2022-837528").await.unwrap();
     assert!(resp.status().is_success());
 
     let body = resp.text().await.unwrap();
-    //println!("{:?}", body);
     let fragment = Html::parse_document(&body);
-
     let stories = Selector::parse(".table").unwrap();
-
     let mut dates =  Vec::<&str>::new();
 
     for story in fragment.select(&stories) {
         let story_txt = story.text().collect::<Vec<_>>();
-        
-        //println!("{:?}", story_txt);
-        //type_of(&story_txt);
         dates = story_txt;
     }
 
-    //println!("{:?}", dates);
-
     let current_date = chrono::Utc::now().date();
-    //println!("{}", current_date.month());
-    //let test: str = ({if current_date.month() < 10 {"0"} else {""}},current_date.month(),".",current_date.year() ); 
     let mut test = String::from("");
     test.push_str(if current_date.month() < 10 {"0"} else {""});
     test.push_str(&current_date.month().to_string());
     test.push_str(".");
     test.push_str(&current_date.year().to_string());
-    //println!("{}",test);
-
-    //println!("{:?}", resp.status())
-    //println!("{:?}", result);
+   
     println!("In den folgenden Zeiträumen finden Bundestagssitzungen statt: ");
     for s in dates {
         if s.contains(&test) {
@@ -57,9 +54,6 @@ async fn main() {
         }
     }
 }
-
-fn type_of<T>(_: &T) {
-    println!("{}",type_name::<T>())
 }
 
 
