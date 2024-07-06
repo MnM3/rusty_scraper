@@ -27,7 +27,7 @@ fn type_of<T>(_: &T) {
 }
 
 async fn bundestag_sitzungen() {
-    let resp = reqwest::get("https://www.bundestag.de/parlament/plenum/sitzungskalender/bt2022-837528").await.unwrap();
+    let resp = reqwest::get("https://www.bundestag.de/parlament/plenum/sitzungskalender/bt2024-941110").await.unwrap();
     assert!(resp.status().is_success());
 
     let body = resp.text().await.unwrap();
@@ -35,43 +35,20 @@ async fn bundestag_sitzungen() {
     let stories = Selector::parse(".table").unwrap();
     let mut dates =  Vec::<&str>::new();
 
+    println!("In den folgenden Zeiträumen finden Bundestagssitzungen statt: ");
     for story in fragment.select(&stories) {
         let story_txt = story.text().collect::<Vec<_>>();
-        dates = story_txt;
-    }
-
-    let current_date = chrono::Utc::now().date();
-    let mut test = String::from("");
-    test.push_str(if current_date.month() < 10 {"0"} else {""});
-    test.push_str(&current_date.month().to_string());
-    test.push_str(".");
-    test.push_str(&current_date.year().to_string());
-   
-    println!("In den folgenden Zeiträumen finden Bundestagssitzungen statt: ");
-    for s in dates {
-        if s.contains(&test) {
-            println!("{}", s)
+        for s in &story_txt {
+            if s.contains("-") {
+                println!("{}", s);
+                dates.push(s);
+            }
         }
+    
     }
 }
 }
 
-
-
-
-/*   
-    fn hacker_news(url: &str) {
-    let mut resp = reqwest::get(url).await.unwrap();
-    assert!(resp.status().is_success());
-
-    Document::from_read(resp)
-        .unwrap()
-        .find(Name("a"))
-        .filter_map(|n| n.attr("href"))
-        .for_each(|x| println!("{}", x));
-
-
-        */
 
     
     
