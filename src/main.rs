@@ -2,14 +2,10 @@ extern crate reqwest;
 extern crate select;
 extern crate scraper;
 
-
-//use select::document::Document;
-//use select::predicate::Name;
 use scraper::{Html, Selector};
 use std::any::type_name;
 use chrono::Datelike;
 use std::env;
-//use chrono; //0.4.19
 
 #[tokio::main]
 async fn main() {
@@ -20,11 +16,8 @@ async fn main() {
     if mainarg.eq("Bundestag") || mainarg.eq("bundestag") {
         bundestag_sitzungen().await;
     }
-    
+}  
 
-fn type_of<T>(_: &T) {
-    println!("{}",type_name::<T>())
-}
 
 async fn bundestag_sitzungen() {
     let resp = reqwest::get("https://www.bundestag.de/parlament/plenum/sitzungskalender/bt2024-941110").await.unwrap();
@@ -43,11 +36,10 @@ async fn bundestag_sitzungen() {
                 println!("{}", s);
                 dates.push(s);
             }
-        }
-    
+        } 
     }
 }
-}
+
 
 
     
